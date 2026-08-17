@@ -18,6 +18,7 @@ export interface Database {
           weight_weaning: number | null
           weight_15_20_months: number | null
           observations: string | null
+          photo_url: string | null
           genealogy: Json
           health_data: Json
           custom_fields: Json
@@ -32,6 +33,7 @@ export interface Database {
           weight_weaning?: number | null
           weight_15_20_months?: number | null
           observations?: string | null
+          photo_url?: string | null
           genealogy?: Json
           health_data?: Json
           custom_fields?: Json
@@ -46,6 +48,7 @@ export interface Database {
           weight_weaning?: number | null
           weight_15_20_months?: number | null
           observations?: string | null
+          photo_url?: string | null
           genealogy?: Json
           health_data?: Json
           custom_fields?: Json

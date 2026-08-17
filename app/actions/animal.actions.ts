@@ -197,3 +197,37 @@ export async function createAnimal(data: {
   }
 }
 
+export async function uploadAnimalPhoto(animalId: string, formData: FormData) {
+  try {
+    const file = formData.get("file") as File
+    if (!file) return { success: false, error: "No file provided" }
+
+    const supabase = await createClient()
+    
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${animalId}-${Date.now()}.${fileExt}`
+    const filePath = `${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('animal-photos')
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('animal-photos')
+      .getPublicUrl(filePath)
+
+    // Update animal record
+    const { error: updateError } = await (supabase.from('animals').update as any)({ photo_url: publicUrl }).eq('id', animalId)
+    
+    if (updateError) throw updateError
+
+    revalidatePath("/animales")
+    revalidatePath(`/animales/${animalId}`)
+    return { success: true, photo_url: publicUrl }
+  } catch (error: any) {
+    console.error("Error uploading photo:", error)
+    return { success: false, error: "No se pudo subir la foto." }
+  }
+}

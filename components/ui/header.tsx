@@ -31,9 +31,9 @@ export function Header() {
         {mounted ? (
           <div className="flex flex-col items-end text-sm text-gray-700">
             <span className="font-medium capitalize">
-              {format(date, "EEEE, d 'de' MMMM", { locale: es })}
+              {format(date, "EEEE, dd/MM/yyyy", { locale: es })}
             </span>
-            <span>{format(date, "HH:mm")}</span>
+            <span>{format(date, "HH:mm:ss")}</span>
           </div>
         ) : (
           <div className="h-10 w-24 animate-pulse rounded bg-gray-100" />

@@ -5,7 +5,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { QuickWeightModal } from "@/components/QuickWeightModal"
 import { deleteAnimal } from "@/app/actions/animal.actions"
 import { toast } from "sonner"
-import { Trash2, ChevronRight, Weight } from "lucide-react"
+import { Trash2, ChevronRight, Weight, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -34,7 +34,16 @@ export function AnimalCard({ animal }: AnimalCardProps) {
 
   return (
     <Card className="flex flex-col justify-between overflow-hidden transition-shadow hover:shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-gray-50 pb-4 pt-5">
+      {animal.photo_url ? (
+        <div className="w-full h-48 bg-gray-200">
+          <img src={animal.photo_url} alt={`Caravana ${animal.caravana_number}`} className="w-full h-full object-cover" />
+        </div>
+      ) : (
+        <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+          <ImageIcon className="h-16 w-16 text-gray-300" />
+        </div>
+      )}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-white pb-4 pt-5 border-b">
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Caravana</span>
           <span className="text-2xl font-bold text-black">{animal.caravana_number}</span>
@@ -44,8 +53,8 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           description={`¿Estás seguro de eliminar la caravana ${animal.caravana_number}? Se borrará todo su historial y pesajes.`}
           onConfirm={handleDelete}
           trigger={
-            <button className="rounded-full p-2 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors">
-              <Trash2 className="h-5 w-5" />
+            <button className="h-12 w-12 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors bg-red-50">
+              <Trash2 className="h-6 w-6" />
             </button>
           }
         />
@@ -77,9 +86,9 @@ export function AnimalCard({ animal }: AnimalCardProps) {
         <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} />
         
         <Link href={`/animales/${animal.id}`} className="w-full">
-          <button className="flex w-full items-center justify-center gap-2 rounded-md bg-gray-100 py-3 text-sm font-medium text-gray-900 hover:bg-gray-200 transition-colors">
+          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 h-12 text-base font-semibold text-gray-900 hover:bg-gray-200 transition-colors border border-gray-200">
             Ver Ficha Completa
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </button>
         </Link>
       </CardFooter>

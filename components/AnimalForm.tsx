@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { createAnimal } from "@/app/actions/animal.actions"
+import { createAnimal, uploadAnimalPhoto } from "@/app/actions/animal.actions"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -42,6 +42,16 @@ const animalSchema = z.object({
 export function AnimalForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setPhotoFile(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    }
+  }
 
   const form = useForm<z.infer<typeof animalSchema>>({
     resolver: zodResolver(animalSchema),
@@ -85,6 +95,15 @@ export function AnimalForm() {
 
     const { success, error, id } = await createAnimal(data)
     
+    if (success && id && photoFile) {
+      const formData = new FormData()
+      formData.append("file", photoFile)
+      const uploadResult = await uploadAnimalPhoto(id, formData)
+      if (!uploadResult.success) {
+        toast.error("Animal guardado, pero falló la foto: " + uploadResult.error)
+      }
+    }
+
     setIsSubmitting(false)
 
     if (success) {
@@ -99,6 +118,23 @@ export function AnimalForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         
+        {/* Foto del Animal */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-bold border-b pb-2">Foto del Animal</h3>
+          <div className="flex flex-col gap-4">
+            {previewUrl && (
+              <img src={previewUrl} alt="Preview" className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
+            )}
+            <Input 
+              type="file" 
+              accept="image/*" 
+              className="h-12 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer pt-2" 
+              onChange={handlePhotoChange}
+            />
+            <p className="text-sm text-gray-500">Puedes tomar una foto o elegirla de tu galería.</p>
+          </div>
+        </div>
+
         {/* Identificación Básica */}
         <div className="space-y-4">
           <h3 className="text-lg font-bold border-b pb-2">Identificación</h3>
