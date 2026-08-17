@@ -7,3 +7,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Protocolo de Sincronización Continua
+Cada vez que completes una funcionalidad, corrección de bug o ajuste visual, debes ejecutar automáticamente al finalizar:
+`git add . && git commit -m "tipo: descripción clara del cambio" && git push`
+Esto permitirá que Vercel detecte cada commit y genere el preview/deploy en producción en tiempo real.
