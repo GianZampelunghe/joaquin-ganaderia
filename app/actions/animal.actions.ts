@@ -142,7 +142,7 @@ export async function updateAnimal(id: string, data: any) {
     if (error) throw error
     revalidatePath("/animales")
     revalidatePath(`/animales/${id}`)
-    return { success: true, error: null }
+    return { success: true, data: { id } }
   } catch (error: any) {
     console.error("Error updating animal:", error)
     return { success: false, error: error?.message || "Error al actualizar." }
@@ -172,7 +172,7 @@ export async function createAnimal(data: {
       .from("animals")
       .select("id")
       .eq("caravana_number", data.caravana_number)
-      .single()
+      .maybeSingle()
       
     if (existing) {
       return { success: false, error: "El número de caravana ya existe." }
@@ -222,7 +222,7 @@ export async function createAnimal(data: {
     }
 
     revalidatePath("/animales")
-    return { success: true, error: null, id: newAnimal.id }
+    return { success: true, data: newAnimal }
   } catch (error: any) {
     console.error("Error creating animal:", error)
     return { success: false, error: error?.message || "Ocurrió un error al crear el animal." }

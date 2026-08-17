@@ -5,7 +5,7 @@ import { ChevronLeft, Weight, Syringe, Calendar, Info, Activity } from "lucide-r
 import { AnimalActions } from "./AnimalActions"
 import { WeightItem } from "./WeightItem"
 import Link from "next/link"
-import { format } from "date-fns"
+import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
 
 export default async function AnimalDetailPage({ params }: { params: { id: string } }) {
@@ -25,6 +25,35 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
       </div>
     )
   }
+
+  const sortedWeights = [...(animal.weights || [])].sort(
+    (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime()
+  );
+
+  const processedWeights = sortedWeights.map((w, index) => {
+    let previousWeight = null;
+    let previousDate = null;
+
+    if (index < sortedWeights.length - 1) {
+      const prev = sortedWeights[index + 1];
+      previousWeight = prev.weight_kg;
+      previousDate = new Date(prev.recorded_at);
+    } else if (animal.weight_weaning) {
+      previousWeight = animal.weight_weaning;
+    }
+
+    const gain = previousWeight !== null ? w.weight_kg - previousWeight : null;
+    let gdp = null;
+
+    if (gain !== null && previousDate) {
+      const days = differenceInDays(new Date(w.recorded_at), previousDate);
+      if (days > 0) {
+        gdp = gain / days;
+      }
+    }
+
+    return { ...w, gain, gdp };
+  });
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl mx-auto">
@@ -145,14 +174,12 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
 
                 <div className="flex flex-col mt-2">
                   <h4 className="text-sm font-semibold text-gray-600 mb-2">Pesajes Registrados</h4>
-                  {!animal.weights || animal.weights.length === 0 ? (
+                  {!processedWeights || processedWeights.length === 0 ? (
                     <p className="text-sm text-gray-500 italic">Sin registros</p>
                   ) : (
-                    animal.weights
-                      .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
-                      .map((w) => (
-                        <WeightItem key={w.id} weight={w} animalId={animal.id} />
-                      ))
+                    processedWeights.map((w) => (
+                      <WeightItem key={w.id} weight={w} animalId={animal.id} />
+                    ))
                   )}
                 </div>
               </div>

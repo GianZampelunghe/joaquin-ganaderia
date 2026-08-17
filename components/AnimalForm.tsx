@@ -120,9 +120,8 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
       // Editar
       const result = await updateAnimal(initialData.id, data)
       success = result.success
-      error = result.error
-      // Nota: actualizar vacuna y peso actual requiere endpoints separados o lógica más compleja,
-      // por simplicidad actualizamos los campos base de animals.
+      error = result.error as string | null
+      animalId = result.data?.id || initialData.id
     } else {
       // Crear
       const result = await createAnimal({
@@ -133,8 +132,8 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
         vaccine_date: values.vaccine_date,
       })
       success = result.success
-      error = result.error
-      animalId = result.id
+      error = result.error as string | null
+      animalId = result.data?.id
     }
     
     if (success && animalId && photoFile) {
