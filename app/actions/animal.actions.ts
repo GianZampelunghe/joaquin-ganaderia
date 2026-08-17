@@ -30,7 +30,7 @@ export async function getAnimals() {
     return { data: data as unknown as AnimalWithRelations[], error: null }
   } catch (error) {
     console.error("Error fetching animals:", error)
-    return { data: null, error: "No se pudieron cargar los animales." }
+    return { data: [], error: "No se pudieron cargar los animales por problemas de conexión. Compruebe su internet y vuelva a intentarlo." }
   }
 }
 
