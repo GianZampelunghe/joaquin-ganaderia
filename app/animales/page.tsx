@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export default async function AnimalesPage() {
-  const { data: animals, error } = await getAnimals()
+  const animals = await getAnimals()
 
   return (
     <div className="flex flex-col gap-6">
@@ -23,13 +23,7 @@ export default async function AnimalesPage() {
         </Link>
       </div>
 
-      {error ? (
-        <div className="rounded-xl bg-red-50 p-4 text-red-800">
-          <p>{error}</p>
-        </div>
-      ) : (
-        <AnimalListClient animals={animals || []} />
-      )}
+      <AnimalListClient animals={animals || []} />
     </div>
   )
 }

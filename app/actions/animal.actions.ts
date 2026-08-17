@@ -14,21 +14,27 @@ export type AnimalWithRelations = Database['public']['Tables']['animals']['Row']
  */
 export async function getAnimals() {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient();
     const { data, error } = await supabase
-      .from("animals")
+      .from('animals')
       .select(`
         *,
         weights (*),
         vaccines (*)
       `)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false });
 
-    if (error) throw error
-    return { data: data as unknown as AnimalWithRelations[], error: null }
-  } catch (error) {
-    console.error("Error fetching animals:", error)
-    return { data: [], error: "No se pudieron cargar los animales por problemas de conexión. Compruebe su internet y vuelva a intentarlo." }
+    if (error) {
+      console.error('Error en Supabase getAnimals:', error.message, error.details);
+      // Fallback a consulta plana simple si falla el join
+      const { data: fallbackData } = await supabase.from('animals').select('*');
+      return (fallbackData as unknown as AnimalWithRelations[]) || [];
+    }
+
+    return (data as unknown as AnimalWithRelations[]) || [];
+  } catch (err) {
+    console.error('Excepción en getAnimals:', err);
+    return [];
   }
 }
 

@@ -5,7 +5,7 @@ import { PlusCircle, Search, FileText, Activity, Syringe, Scale } from "lucide-r
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const { data: animals } = await getAnimals();
+  const animals = await getAnimals();
   const animalCount = animals?.length || 0;
   
   const totalWeighings = animals?.reduce((acc, animal) => acc + (animal.weights?.length || 0), 0) || 0;
