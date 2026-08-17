@@ -33,7 +33,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
   }
 
   return (
-    <Card className="flex flex-col justify-between overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md hover:border-gray-300 animate-in fade-in zoom-in-95">
       {animal.photo_url ? (
         <div className="w-full h-48 bg-gray-200">
           <img src={animal.photo_url} alt={`Caravana ${animal.caravana_number}`} className="w-full h-full object-cover" />
@@ -53,7 +53,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
           description={`¿Estás seguro de eliminar la caravana ${animal.caravana_number}? Se borrará todo su historial y pesajes.`}
           onConfirm={handleDelete}
           trigger={
-            <button className="h-12 w-12 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors bg-red-50">
+            <button className="h-12 w-12 rounded-full flex items-center justify-center text-rose-700 hover:bg-rose-100 transition-all duration-150 bg-rose-50 border border-rose-200 active:scale-[0.98]">
               <Trash2 className="h-6 w-6" />
             </button>
           }
@@ -86,7 +86,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
         <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} />
         
         <Link href={`/animales/${animal.id}`} className="w-full">
-          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 h-12 text-base font-semibold text-gray-900 hover:bg-gray-200 transition-colors border border-gray-200">
+          <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 h-12 text-base font-semibold text-gray-900 hover:bg-gray-200 transition-all duration-150 border border-gray-200 active:scale-[0.98]">
             Ver Ficha Completa
             <ChevronRight className="h-5 w-5" />
           </button>
