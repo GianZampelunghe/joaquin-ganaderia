@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/types/database.types"
 
 export type AnimalWithRelations = Database['public']['Tables']['animals']['Row'] & {
-  weights?: { id?: string, weight_kg: number; recorded_at: string }[] | null,
+  weights?: { id?: string, weight_kg: number; recorded_at: string, notes?: string | null }[] | null,
   vaccines?: { id: string; applied: boolean; vaccine_type: string | null; applied_at: string }[] | null
 }
 
@@ -21,7 +21,8 @@ export async function getAnimals() {
         *,
         weights (
           weight_kg,
-          recorded_at
+          recorded_at,
+          notes
         )
       `)
       .order('updated_at', { ascending: false })
@@ -47,7 +48,8 @@ export async function getAnimalById(id: string) {
         weights (
           id,
           weight_kg,
-          recorded_at
+          recorded_at,
+          notes
         ),
         vaccines (
           id,
@@ -70,7 +72,7 @@ export async function getAnimalById(id: string) {
 /**
  * Agrega un pesaje rápido a un animal
  */
-export async function addQuickWeight(animalId: string, weightKg: number) {
+export async function addQuickWeight(animalId: string, weightKg: number, notes?: string, recordedAt?: string) {
   try {
     const supabase = await createClient()
     const { data, error } = (await supabase
@@ -78,6 +80,8 @@ export async function addQuickWeight(animalId: string, weightKg: number) {
       .insert({
         animal_id: animalId,
         weight_kg: weightKg,
+        notes: notes || null,
+        recorded_at: recordedAt || new Date().toISOString()
       } as any)
       .select()
       .single()) as any
@@ -114,6 +118,34 @@ export async function deleteAnimal(id: string) {
   } catch (error) {
     console.error(`Error deleting animal ${id}:`, error)
     return { success: false, error: "No se pudo eliminar el animal." }
+  }
+}
+
+export async function deleteWeight(id: string, animalId: string) {
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from("weights").delete().eq("id", id)
+    if (error) throw error
+    revalidatePath(`/animales/${animalId}`)
+    return { success: true, error: null }
+  } catch (error) {
+    console.error("Error deleting weight:", error)
+    return { success: false, error: "Error al eliminar pesaje." }
+  }
+}
+
+export async function updateAnimal(id: string, data: any) {
+  try {
+    const supabase = await createClient()
+    const { error } = await (supabase.from("animals").update as any)(data).eq("id", id)
+
+    if (error) throw error
+    revalidatePath("/animales")
+    revalidatePath(`/animales/${id}`)
+    return { success: true, error: null }
+  } catch (error: any) {
+    console.error("Error updating animal:", error)
+    return { success: false, error: error?.message || "Error al actualizar." }
   }
 }
 

@@ -1,7 +1,9 @@
 import { getAnimalById } from "@/app/actions/animal.actions"
 import { QuickWeightModal } from "@/components/QuickWeightModal"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, Weight, Syringe, Calendar, Info } from "lucide-react"
+import { ChevronLeft, Weight, Syringe, Calendar, Info, Activity } from "lucide-react"
+import { AnimalActions } from "./AnimalActions"
+import { WeightItem } from "./WeightItem"
 import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -36,6 +38,9 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
           <span className="text-sm text-gray-500 mt-1">
             Actualizado el {format(new Date(animal.updated_at), "d MMM yyyy HH:mm", { locale: es })}
           </span>
+        </div>
+        <div className="ml-auto">
+          <AnimalActions animalId={animal.id} caravana={animal.caravana_number} />
         </div>
       </div>
 
@@ -94,7 +99,7 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
             {!animal.vaccines || animal.vaccines.length === 0 ? (
               <p className="text-gray-500">No hay vacunas registradas.</p>
             ) : (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 mb-4">
                 {animal.vaccines.map((v) => (
                   <div key={v.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
                     <span className="font-medium text-gray-900">{v.vaccine_type}</span>
@@ -105,18 +110,25 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
                 ))}
               </div>
             )}
+            
+            {((animal.health_data as any)?.notes) && (
+              <div className="mt-4 pt-4 border-t">
+                <span className="text-sm text-gray-500 block mb-1">Notas Sanitarias</span>
+                <p className="text-gray-800 whitespace-pre-wrap">{(animal.health_data as any).notes}</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Sidebar (Weights) */}
         <div className="flex flex-col gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 bg-green-50 border-b border-green-100">
-              <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} />
+            <div className="p-4 bg-emerald-50 border-b border-emerald-100">
+              <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} birthDate={animal.birth_date} />
             </div>
             <div className="p-6">
               <h3 className="text-lg font-bold border-b pb-2 mb-4 flex items-center gap-2">
-                <Weight className="h-5 w-5 text-gray-400" /> Historial de Peso
+                <Activity className="h-5 w-5 text-gray-400" /> Historial de Peso
               </h3>
               
               <div className="flex flex-col gap-4">
@@ -129,26 +141,17 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
                     <span className="text-xs text-gray-500">Al Destete</span>
                     <span className="font-medium">{animal.weight_weaning || "--"} kg</span>
                   </div>
-                  <div className="flex flex-col mt-2">
-                    <span className="text-xs text-gray-500">15-20 Meses</span>
-                    <span className="font-medium">{animal.weight_15_20_months || "--"} kg</span>
-                  </div>
                 </div>
 
-                <div className="flex flex-col gap-3 mt-2">
-                  <h4 className="text-sm font-semibold text-gray-600">Pesajes Registrados</h4>
+                <div className="flex flex-col mt-2">
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Pesajes Registrados</h4>
                   {!animal.weights || animal.weights.length === 0 ? (
                     <p className="text-sm text-gray-500 italic">Sin registros</p>
                   ) : (
                     animal.weights
                       .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
                       .map((w) => (
-                        <div key={w.id} className="flex justify-between items-center py-2 border-b border-dashed last:border-0">
-                          <span className="font-bold text-lg text-gray-900">{w.weight_kg} kg</span>
-                          <span className="text-sm text-gray-500">
-                            {format(new Date(w.recorded_at), "dd/MM/yy HH:mm")}
-                          </span>
-                        </div>
+                        <WeightItem key={w.id} weight={w} animalId={animal.id} />
                       ))
                   )}
                 </div>

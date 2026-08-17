@@ -83,7 +83,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 pt-4 bg-white border-t">
-        <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} />
+        <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} birthDate={animal.birth_date} />
         
         <Link href={`/animales/${animal.id}`} className="w-full">
           <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 h-12 text-base font-semibold text-gray-900 hover:bg-gray-200 transition-all duration-150 border border-gray-200 active:scale-[0.98]">

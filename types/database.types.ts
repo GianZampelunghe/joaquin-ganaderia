@@ -62,18 +62,21 @@ export interface Database {
           animal_id: string
           weight_kg: number
           recorded_at: string
+          notes: string | null
         }
         Insert: {
           id?: string
           animal_id: string
           weight_kg: number
           recorded_at?: string
+          notes?: string | null
         }
         Update: {
           id?: string
           animal_id?: string
           weight_kg?: number
           recorded_at?: string
+          notes?: string | null
         }
       }
       vaccines: {
