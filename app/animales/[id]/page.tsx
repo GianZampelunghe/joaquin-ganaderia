@@ -56,25 +56,25 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Genética</span>
                 <span className="font-medium text-lg">
-                  {(animal.genealogy as any)?.genetica || "--"}
+                  {((animal.genealogy as unknown) as { genetica: string })?.genetica || "--"}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Pelaje Padre</span>
                 <span className="font-medium text-lg">
-                  {(animal.genealogy as any)?.pelaje_padre || "--"}
+                  {((animal.genealogy as unknown) as { pelaje_padre: string })?.pelaje_padre || "--"}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Pelaje Madre</span>
                 <span className="font-medium text-lg">
-                  {(animal.genealogy as any)?.pelaje_madre || "--"}
+                  {((animal.genealogy as unknown) as { pelaje_madre: string })?.pelaje_madre || "--"}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Pelaje Abuelo</span>
                 <span className="font-medium text-lg">
-                  {(animal.genealogy as any)?.pelaje_abuelo || "--"}
+                  {((animal.genealogy as unknown) as { pelaje_abuelo: string })?.pelaje_abuelo || "--"}
                 </span>
               </div>
             </div>
@@ -95,7 +95,7 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
               <p className="text-gray-500">No hay vacunas registradas.</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {animal.vaccines.map((v: any) => (
+                {animal.vaccines.map((v) => (
                   <div key={v.id} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
                     <span className="font-medium text-gray-900">{v.vaccine_type}</span>
                     <span className="text-sm text-gray-500">
@@ -141,8 +141,8 @@ export default async function AnimalDetailPage({ params }: { params: { id: strin
                     <p className="text-sm text-gray-500 italic">Sin registros</p>
                   ) : (
                     animal.weights
-                      .sort((a: any, b: any) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
-                      .map((w: any) => (
+                      .sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime())
+                      .map((w) => (
                         <div key={w.id} className="flex justify-between items-center py-2 border-b border-dashed last:border-0">
                           <span className="font-bold text-lg text-gray-900">{w.weight_kg} kg</span>
                           <span className="text-sm text-gray-500">

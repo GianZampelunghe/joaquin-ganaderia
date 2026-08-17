@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/types/database.types"
 
-type Animal = Database['public']['Tables']['animals']['Row']
+export type AnimalWithRelations = Database['public']['Tables']['animals']['Row'] & {
+  weights?: { id?: string, weight_kg: number; recorded_at: string }[] | null,
+  vaccines?: { id: string; applied: boolean; vaccine_type: string | null; applied_at: string }[] | null
+}
 
 /**
  * Obtiene la lista completa de animales ordenados por fecha de actualización
@@ -24,7 +27,7 @@ export async function getAnimals() {
       .order('updated_at', { ascending: false })
 
     if (error) throw error
-    return { data, error: null }
+    return { data: data as unknown as AnimalWithRelations[], error: null }
   } catch (error) {
     console.error("Error fetching animals:", error)
     return { data: null, error: "No se pudieron cargar los animales." }
@@ -57,7 +60,7 @@ export async function getAnimalById(id: string) {
       .single()
 
     if (error) throw error
-    return { data, error: null }
+    return { data: data as unknown as AnimalWithRelations, error: null }
   } catch (error) {
     console.error(`Error fetching animal ${id}:`, error)
     return { data: null, error: "No se pudo cargar el animal." }
@@ -70,19 +73,19 @@ export async function getAnimalById(id: string) {
 export async function addQuickWeight(animalId: string, weightKg: number) {
   try {
     const supabase = await createClient()
-    const { data, error } = await supabase
+    const { data, error } = (await supabase
       .from("weights")
       .insert({
         animal_id: animalId,
         weight_kg: weightKg,
-      })
+      } as any)
       .select()
-      .single()
+      .single()) as any
 
     if (error) throw error
     
     // Actualizar updated_at del animal
-    await supabase.from("animals").update({ updated_at: new Date().toISOString() }).eq("id", animalId)
+    await (supabase.from("animals").update as any)({ updated_at: new Date().toISOString() }).eq("id", animalId)
 
     revalidatePath("/animales")
     revalidatePath(`/animales/${animalId}`)
@@ -114,10 +117,21 @@ export async function deleteAnimal(id: string) {
   }
 }
 
-/**
- * Crea un nuevo animal
- */
-export async function createAnimal(data: any) {
+export async function createAnimal(data: {
+  caravana_number: string;
+  birth_date?: string | null;
+  weight_birth?: number | null;
+  weight_weaning?: number | null;
+  weight_15_20_months?: number | null;
+  observations?: string | null;
+  genealogy?: { pelaje_padre: string; pelaje_madre: string; pelaje_abuelo: string; genetica: string };
+  health_data?: any;
+  custom_fields?: any;
+  current_weight?: number | null;
+  has_vaccine?: boolean;
+  vaccine_type?: string;
+  vaccine_date?: string;
+}) {
   try {
     const supabase = await createClient()
 
@@ -133,7 +147,7 @@ export async function createAnimal(data: any) {
     }
 
     // 2. Insertar animal
-    const { data: newAnimal, error: animalError } = await supabase
+    const { data: newAnimal, error: animalError } = (await supabase
       .from("animals")
       .insert({
         caravana_number: data.caravana_number,
@@ -145,9 +159,9 @@ export async function createAnimal(data: any) {
         genealogy: data.genealogy || { pelaje_padre: "", pelaje_madre: "", pelaje_abuelo: "", genetica: "" },
         health_data: data.health_data || {},
         custom_fields: data.custom_fields || {}
-      })
+      } as any)
       .select()
-      .single()
+      .single()) as any
 
     if (animalError) throw animalError
 
@@ -158,7 +172,7 @@ export async function createAnimal(data: any) {
         .insert({
           animal_id: newAnimal.id,
           weight_kg: data.current_weight
-        })
+        } as any)
       if (weightError) console.error("Error saving initial weight:", weightError)
     }
 
@@ -171,7 +185,7 @@ export async function createAnimal(data: any) {
           applied: true,
           vaccine_type: data.vaccine_type,
           applied_at: data.vaccine_date || new Date().toISOString()
-        })
+        } as any)
       if (vaccineError) console.error("Error saving initial vaccine:", vaccineError)
     }
 

@@ -34,7 +34,7 @@ const animalSchema = z.object({
   pelaje_madre: z.string().min(1, "Obligatorio"),
   pelaje_abuelo: z.string().min(1, "Obligatorio"),
   genetica: z.string().min(1, "Obligatorio"),
-  has_vaccine: z.boolean().default(false),
+  has_vaccine: z.boolean(),
   vaccine_type: z.string().optional(),
   vaccine_date: z.string().optional(),
 })

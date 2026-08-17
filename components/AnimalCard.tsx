@@ -10,13 +10,15 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
+import { AnimalWithRelations } from "@/app/actions/animal.actions"
+
 interface AnimalCardProps {
-  animal: any
+  animal: AnimalWithRelations
 }
 
 export function AnimalCard({ animal }: AnimalCardProps) {
-  const latestWeight = animal.weights?.length > 0 
-    ? animal.weights.reduce((prev: any, current: any) => 
+  const latestWeight = animal.weights && animal.weights.length > 0 
+    ? animal.weights.reduce((prev, current) => 
         (new Date(prev.recorded_at) > new Date(current.recorded_at) ? prev : current)
       ) 
     : null

@@ -16,7 +16,7 @@ interface ConfirmDialogProps {
   title: string
   description?: string
   onConfirm: () => void
-  trigger: React.ReactNode
+  trigger: React.ReactElement
   variant?: "danger" | "default"
 }
 
@@ -29,7 +29,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
         {trigger}
       </AlertDialogTrigger>
       <AlertDialogContent className="w-[90vw] max-w-md rounded-xl">

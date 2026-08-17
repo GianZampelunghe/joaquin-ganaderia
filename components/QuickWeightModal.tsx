@@ -46,7 +46,7 @@ export function QuickWeightModal({ animalId, caravana }: QuickWeightModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="outline" size="sm" className="w-full gap-2 text-green-700 hover:bg-green-50 hover:text-green-800">
           <Scale className="h-4 w-4" />
           Pesaje Rápido
