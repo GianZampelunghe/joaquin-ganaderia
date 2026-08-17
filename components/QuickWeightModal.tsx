@@ -68,13 +68,13 @@ export function QuickWeightModal({ animalId, caravana, birthDate }: QuickWeightM
       <DialogTrigger>
         <Button variant="outline" size="sm" className="w-full gap-2 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 border-emerald-200 h-12 rounded-xl active:scale-[0.98]">
           <Scale className="h-5 w-5" />
-          Pesaje Rápido
+          + Nuevo Pesaje
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] w-[95vw] rounded-2xl bg-white p-6">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="mb-4">
-            <DialogTitle className="text-2xl font-bold text-gray-900">Nuevo Pesaje</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-900">Registrar Nuevo Pesaje</DialogTitle>
             <DialogDescription className="text-base text-gray-600 mt-1">
               Caravana: <strong className="text-gray-900 font-bold bg-gray-100 px-2 py-1 rounded">{caravana}</strong>
             </DialogDescription>

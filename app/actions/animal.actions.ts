@@ -79,7 +79,7 @@ export async function getAnimalById(id: string) {
 }
 
 /**
- * Agrega un pesaje rápido a un animal
+ * Agrega un nuevo pesaje a un animal
  */
 export async function addQuickWeight(animalId: string, weightKg: number, notes?: string, recordedAt?: string) {
   try {
