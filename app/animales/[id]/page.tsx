@@ -8,8 +8,15 @@ import Link from "next/link"
 import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
 
-export default async function AnimalDetailPage({ params }: { params: { id: string } }) {
-  const { data: animal, error } = await getAnimalById(params.id)
+export const dynamic = 'force-dynamic'
+
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function AnimalDetailPage({ params }: PageProps) {
+  const { id } = await params
+  const { data: animal, error } = await getAnimalById(id)
 
   if (error || !animal) {
     return (

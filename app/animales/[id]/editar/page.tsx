@@ -4,8 +4,15 @@ import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export default async function EditarAnimalPage({ params }: { params: { id: string } }) {
-  const { data: animal, error } = await getAnimalById(params.id)
+export const dynamic = 'force-dynamic'
+
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditarAnimalPage({ params }: PageProps) {
+  const { id } = await params
+  const { data: animal, error } = await getAnimalById(id)
 
   if (error || !animal) {
     return (

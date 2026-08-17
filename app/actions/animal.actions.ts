@@ -64,10 +64,16 @@ export async function getAnimalById(id: string) {
       .eq("id", id)
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error(`Error en Supabase getAnimalById ${id}:`, error.message, error.details)
+      // Fallback a consulta plana simple si falla el join
+      const { data: fallbackData } = await supabase.from('animals').select('*').eq('id', id).single()
+      return { data: (fallbackData as unknown as AnimalWithRelations) || null, error: null }
+    }
+
     return { data: data as unknown as AnimalWithRelations, error: null }
   } catch (error) {
-    console.error(`Error fetching animal ${id}:`, error)
+    console.error(`Excepción en getAnimalById ${id}:`, error)
     return { data: null, error: "No se pudo cargar el animal." }
   }
 }
