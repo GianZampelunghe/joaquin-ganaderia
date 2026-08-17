@@ -19,13 +19,10 @@ export async function getAnimals() {
       .from("animals")
       .select(`
         *,
-        weights (
-          weight_kg,
-          recorded_at,
-          notes
-        )
+        weights (*),
+        vaccines (*)
       `)
-      .order('updated_at', { ascending: false })
+      .order('created_at', { ascending: false })
 
     if (error) throw error
     return { data: data as unknown as AnimalWithRelations[], error: null }
@@ -93,6 +90,7 @@ export async function addQuickWeight(animalId: string, weightKg: number, notes?:
 
     revalidatePath("/animales")
     revalidatePath(`/animales/${animalId}`)
+    revalidatePath("/")
     return { success: true, error: null }
   } catch (error) {
     console.error("Error adding quick weight:", error)
@@ -114,6 +112,7 @@ export async function deleteAnimal(id: string) {
     if (error) throw error
     
     revalidatePath("/animales")
+    revalidatePath("/")
     return { success: true, error: null }
   } catch (error) {
     console.error(`Error deleting animal ${id}:`, error)
@@ -127,6 +126,8 @@ export async function deleteWeight(id: string, animalId: string) {
     const { error } = await supabase.from("weights").delete().eq("id", id)
     if (error) throw error
     revalidatePath(`/animales/${animalId}`)
+    revalidatePath("/animales")
+    revalidatePath("/")
     return { success: true, error: null }
   } catch (error) {
     console.error("Error deleting weight:", error)
@@ -142,6 +143,7 @@ export async function updateAnimal(id: string, data: any) {
     if (error) throw error
     revalidatePath("/animales")
     revalidatePath(`/animales/${id}`)
+    revalidatePath("/")
     return { success: true, data: { id } }
   } catch (error: any) {
     console.error("Error updating animal:", error)
@@ -222,6 +224,7 @@ export async function createAnimal(data: {
     }
 
     revalidatePath("/animales")
+    revalidatePath("/")
     return { success: true, data: newAnimal }
   } catch (error: any) {
     console.error("Error creating animal:", error)
@@ -257,6 +260,7 @@ export async function uploadAnimalPhoto(animalId: string, formData: FormData) {
 
     revalidatePath("/animales")
     revalidatePath(`/animales/${animalId}`)
+    revalidatePath("/")
     return { success: true, photo_url: publicUrl }
   } catch (error: any) {
     console.error("Error uploading photo:", error)
