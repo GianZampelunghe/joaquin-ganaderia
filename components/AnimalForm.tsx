@@ -225,12 +225,12 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                 <FormLabel className="text-base font-semibold">Número de Caravana *</FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder="Ej: 1234" 
+                    placeholder="Ej: AR8921" 
                     {...field} 
                     type="text"
-                    inputMode="decimal"
-                    pattern="[0-9]*[.,]?[0-9]*"
-                    className="text-lg py-6"
+                    autoCapitalize="characters"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    className="text-lg py-6 uppercase"
                   />
                 </FormControl>
                 <FormMessage />

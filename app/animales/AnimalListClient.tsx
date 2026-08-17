@@ -19,9 +19,10 @@ export function AnimalListClient({ animals }: { animals: any[] }) {
         <Input 
           type="search" 
           placeholder="Buscar por número de caravana..." 
-          className="w-full pl-10 py-6 text-lg rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500"
+          className="w-full pl-10 py-6 text-lg rounded-xl border-gray-300 focus:border-green-500 focus:ring-green-500 uppercase"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          autoCapitalize="characters"
+          onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
         />
       </div>
 
