@@ -7,6 +7,7 @@ import * as z from "zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { createAnimal, updateAnimal, uploadAnimalPhoto, AnimalWithRelations } from "@/app/actions/animal.actions"
+import { compressImage } from "@/lib/image-utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -52,11 +53,16 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setPhotoFile(file)
-      setPreviewUrl(URL.createObjectURL(file))
+      try {
+        const file = e.target.files[0]
+        const compressedFile = await compressImage(file)
+        setPhotoFile(compressedFile)
+        setPreviewUrl(URL.createObjectURL(compressedFile))
+      } catch (err) {
+        toast.error("Error al procesar la imagen")
+      }
     }
   }
 
@@ -109,6 +115,16 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
       },
       health_data: {
         notes: values.health_notes || "",
+      }
+    }
+
+    const birthDateValue = values.birth_date ? new Date(values.birth_date) : null;
+    if (birthDateValue && values.has_vaccine && values.vaccine_date) {
+      const vaccineDateValue = new Date(values.vaccine_date);
+      if (vaccineDateValue < birthDateValue) {
+        toast.error("⚠️ La fecha de vacunación no puede ser anterior a la fecha de nacimiento.");
+        setIsSubmitting(false);
+        return;
       }
     }
 
@@ -321,7 +337,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
 
         {/* Genealogía */}
         <div className="space-y-4">
-          <h3 className="text-lg font-bold border-b pb-2">Genealogía</h3>
+          <h3 className="text-lg font-bold border-b pb-2">Árbol Genealógico</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -425,8 +441,18 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                       <FormItem>
                         <FormLabel>Fecha de Aplicación</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} className="text-lg py-6" />
+                          <Input 
+                            type="date" 
+                            min={form.watch("birth_date") || undefined}
+                            {...field} 
+                            className="text-lg py-6" 
+                          />
                         </FormControl>
+                        {form.watch("birth_date") && field.value && new Date(field.value) < new Date(form.watch("birth_date")!) && (
+                          <p className="text-[13px] font-medium text-destructive mt-1">
+                            ⚠️ La fecha seleccionada no puede ser anterior a la fecha de nacimiento del animal.
+                          </p>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}

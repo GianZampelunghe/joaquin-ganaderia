@@ -83,6 +83,11 @@ export default async function AnimalDetailPage({ params }: PageProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Main Info */}
         <div className="md:col-span-2 flex flex-col gap-6">
+          {animal.photo_url && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-64 md:h-80 relative">
+              <img src={animal.photo_url} alt={animal.caravana_number} className="w-full h-full object-cover" />
+            </div>
+          )}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-bold border-b pb-2 mb-4 flex items-center gap-2">
               <Info className="h-5 w-5 text-gray-400" /> Datos Generales
@@ -160,7 +165,12 @@ export default async function AnimalDetailPage({ params }: PageProps) {
         <div className="flex flex-col gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-4 bg-emerald-50 border-b border-emerald-100">
-              <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} birthDate={animal.birth_date} />
+              <QuickWeightModal 
+                animalId={animal.id} 
+                caravana={animal.caravana_number} 
+                birthDate={animal.birth_date} 
+                lastWeightDate={sortedWeights.length > 0 ? sortedWeights[0].recorded_at : undefined}
+              />
             </div>
             <div className="p-6">
               <h3 className="text-lg font-bold border-b pb-2 mb-4 flex items-center gap-2">

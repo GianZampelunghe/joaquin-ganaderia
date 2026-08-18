@@ -36,7 +36,7 @@ export function AnimalCard({ animal }: AnimalCardProps) {
     <Card className="flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md hover:border-gray-300 animate-in fade-in zoom-in-95">
       {animal.photo_url ? (
         <div className="w-full h-48 bg-gray-200">
-          <img src={animal.photo_url} alt={`Caravana ${animal.caravana_number}`} className="w-full h-full object-cover" />
+          <img src={animal.photo_url} alt={animal.caravana_number} className="w-full h-full object-cover" />
         </div>
       ) : (
         <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
@@ -83,7 +83,12 @@ export function AnimalCard({ animal }: AnimalCardProps) {
       </CardContent>
 
       <CardFooter className="flex flex-col gap-2 pt-4 bg-white border-t">
-        <QuickWeightModal animalId={animal.id} caravana={animal.caravana_number} birthDate={animal.birth_date} />
+        <QuickWeightModal 
+          animalId={animal.id} 
+          caravana={animal.caravana_number} 
+          birthDate={animal.birth_date} 
+          lastWeightDate={latestWeight ? latestWeight.recorded_at : undefined} 
+        />
         
         <Link href={`/animales/${animal.id}`} className="w-full">
           <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 h-12 text-base font-semibold text-gray-900 hover:bg-gray-200 transition-all duration-150 border border-gray-200 active:scale-[0.98]">

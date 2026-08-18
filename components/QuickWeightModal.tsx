@@ -22,37 +22,76 @@ interface QuickWeightModalProps {
   animalId: string
   caravana: string
   birthDate?: string | null
+  lastWeightDate?: string | null
 }
 
-export function QuickWeightModal({ animalId, caravana, birthDate }: QuickWeightModalProps) {
+export function QuickWeightModal({ animalId, caravana, birthDate, lastWeightDate }: QuickWeightModalProps) {
   const [open, setOpen] = useState(false)
   const [weight, setWeight] = useState("")
   const [notes, setNotes] = useState("")
   const [date, setDate] = useState(new Date().toISOString().split("T")[0])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [suggestion, setSuggestion] = useState("")
+  const [autoCompleteNote, setAutoCompleteNote] = useState("")
 
   useEffect(() => {
     if (open) {
       setWeight("")
       setDate(new Date().toISOString().split("T")[0])
-      if (birthDate) {
-        const months = differenceInMonths(new Date(), new Date(birthDate))
-        setNotes(`Pesaje a los ${months} meses`)
-      } else {
-        setNotes("")
-      }
+      setNotes("")
     }
-  }, [open, birthDate])
+  }, [open])
+
+  useEffect(() => {
+    if (!date) return;
+    
+    const selectedDate = new Date(date)
+    const referenceDateStr = lastWeightDate || birthDate
+    
+    if (referenceDateStr) {
+      const referenceDate = new Date(referenceDateStr)
+      
+      // Validation: block if date is before birthDate
+      if (birthDate && selectedDate < new Date(birthDate)) {
+        setSuggestion("⚠️ La fecha seleccionada no puede ser anterior a la fecha de nacimiento.")
+        setAutoCompleteNote("")
+        return
+      }
+
+      const diffTime = Math.abs(selectedDate.getTime() - referenceDate.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      
+      if (diffDays >= 30) {
+        const months = Math.round(diffDays / 30.4)
+        setSuggestion(`💡 Pasaron ${months} meses desde el ${lastWeightDate ? "último pesaje" : "nacimiento"} (${referenceDate.toLocaleDateString('es-AR')}).`)
+        setAutoCompleteNote(`Pesaje a los ${months} meses`)
+      } else {
+        setSuggestion(`💡 Pasaron ${diffDays} días desde el ${lastWeightDate ? "último pesaje" : "nacimiento"} (${referenceDate.toLocaleDateString('es-AR')}).`)
+        setAutoCompleteNote(`Control tras ${diffDays} días`)
+      }
+    } else {
+      setSuggestion("")
+      setAutoCompleteNote("")
+    }
+  }, [date, lastWeightDate, birthDate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!weight) return
 
+    if (birthDate && new Date(date) < new Date(birthDate)) {
+      toast.error("⚠️ La fecha de pesaje no puede ser anterior a la fecha de nacimiento.")
+      return
+    }
+
     setIsSubmitting(true)
     const formattedWeight = parseFloat(weight.replace(",", "."))
     const formattedDate = new Date(date).toISOString()
     
-    const { success, error } = await addQuickWeight(animalId, formattedWeight, notes, formattedDate)
+    // Autocompletar nota si está vacía
+    const finalNotes = notes.trim() === "" ? autoCompleteNote : notes
+
+    const { success, error } = await addQuickWeight(animalId, formattedWeight, finalNotes, formattedDate)
     setIsSubmitting(false)
 
     if (success) {
@@ -109,6 +148,7 @@ export function QuickWeightModal({ animalId, caravana, birthDate }: QuickWeightM
               <Input
                 id="date"
                 type="date"
+                min={birthDate ? new Date(birthDate).toISOString().split("T")[0] : undefined}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="text-lg py-6 focus-visible:ring-emerald-500"
@@ -128,6 +168,18 @@ export function QuickWeightModal({ animalId, caravana, birthDate }: QuickWeightM
                 placeholder="Ej. Destete, Ingreso..."
                 className="text-base py-6 focus-visible:ring-emerald-500"
               />
+              {suggestion && (
+                <div 
+                  className={`mt-1 p-2 rounded-lg text-sm cursor-pointer transition-colors ${suggestion.includes('⚠️') ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}`}
+                  onClick={() => {
+                    if (autoCompleteNote && !suggestion.includes('⚠️')) {
+                      setNotes(autoCompleteNote)
+                    }
+                  }}
+                >
+                  {suggestion}
+                </div>
+              )}
             </div>
           </div>
 
