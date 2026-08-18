@@ -21,7 +21,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent } from "@/components/ui/card"
-import { Camera, Image as ImageIcon, Trash2 } from "lucide-react"
+import { Camera, Image as ImageIcon, Trash2, Edit2 } from "lucide-react"
+import { ImageCropperModal } from "./ImageCropperModal"
 
 const animalSchema = z.object({
   caravana_number: z.string().min(1, "El número de caravana es obligatorio"),
@@ -49,6 +50,8 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.photo_url || null)
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null)
   
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
@@ -57,18 +60,46 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
     if (e.target.files && e.target.files[0]) {
       try {
         const file = e.target.files[0]
-        const compressedFile = await compressImage(file)
-        setPhotoFile(compressedFile)
-        setPreviewUrl(URL.createObjectURL(compressedFile))
+        const reader = new FileReader()
+        reader.onload = () => {
+          setRawImageSrc(reader.result as string)
+          setIsCropperOpen(true)
+        }
+        reader.readAsDataURL(file)
       } catch (err) {
         toast.error("Error al procesar la imagen")
       }
     }
   }
 
+  const handleCropComplete = async (croppedFile: File) => {
+    try {
+      const compressedFile = await compressImage(croppedFile)
+      setPhotoFile(compressedFile)
+      setPreviewUrl(URL.createObjectURL(compressedFile))
+    } catch (err) {
+      toast.error("Error al procesar el recorte")
+    }
+  }
+
+  const handleEditPreview = async () => {
+    // Si tenemos la imagen cruda guardada temporalmente, abrimos el cropper
+    if (rawImageSrc) {
+      setIsCropperOpen(true)
+    } else if (previewUrl) {
+      // Si la previewUrl es un object URL (o blob) de una foto ya recortada pero el usuario quiere volver a editarla
+      // Para editar una URL existente (ej. animal ya guardado o subido), podemos descargar la imagen y mandarla
+      // Para simplificar, la enviamos directamente. Si es de supabase, debemos tener cuidado con el CORS,
+      // pero en `cropImage.ts` ya seteamos crossOrigin="anonymous".
+      setRawImageSrc(previewUrl)
+      setIsCropperOpen(true)
+    }
+  }
+
   const removePhoto = () => {
     setPhotoFile(null)
     setPreviewUrl(null)
+    setRawImageSrc(null)
     if (cameraInputRef.current) cameraInputRef.current.value = ""
     if (galleryInputRef.current) galleryInputRef.current.value = ""
   }
@@ -180,15 +211,24 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
           <h3 className="text-lg font-bold border-b pb-2">Foto del Animal</h3>
           
           {previewUrl ? (
-            <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-100">
+            <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-gray-100 group">
               <img src={previewUrl} alt="Preview" className="w-full h-64 object-cover" />
-              <button
-                type="button"
-                onClick={removePhoto}
-                className="absolute top-2 right-2 bg-rose-50 text-rose-700 p-2 rounded-full hover:bg-rose-100 transition-colors shadow-sm"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
+              <div className="absolute top-2 right-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleEditPreview}
+                  className="bg-blue-50 text-blue-700 p-2 rounded-full hover:bg-blue-100 transition-colors shadow-sm active:scale-95"
+                >
+                  <Edit2 className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={removePhoto}
+                  className="bg-rose-50 text-rose-700 p-2 rounded-full hover:bg-rose-100 transition-colors shadow-sm active:scale-95"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-3">
@@ -510,6 +550,14 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
           {isSubmitting ? "Guardando..." : (initialData ? "Actualizar Animal" : "Guardar Animal")}
         </Button>
       </form>
+
+      {/* Cropper Modal */}
+      <ImageCropperModal
+        open={isCropperOpen}
+        onOpenChange={setIsCropperOpen}
+        imageSrc={rawImageSrc}
+        onCropComplete={handleCropComplete}
+      />
     </Form>
   )
 }
