@@ -24,6 +24,7 @@ export interface Database {
           custom_fields: Json
           created_at: string
           updated_at: string
+          boton: string | null
         }
         Insert: {
           id?: string
@@ -39,6 +40,7 @@ export interface Database {
           custom_fields?: Json
           created_at?: string
           updated_at?: string
+          boton?: string | null
         }
         Update: {
           id?: string
@@ -52,6 +54,48 @@ export interface Database {
           genealogy?: Json
           health_data?: Json
           custom_fields?: Json
+          created_at?: string
+          updated_at?: string
+          boton?: string | null
+        }
+      }
+      horses: {
+        Row: {
+          id: string
+          rp: string
+          birth_date: string | null
+          father: string | null
+          mother: string | null
+          sex: string | null
+          service_notes: string | null
+          observations: string | null
+          photo_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          rp: string
+          birth_date?: string | null
+          father?: string | null
+          mother?: string | null
+          sex?: string | null
+          service_notes?: string | null
+          observations?: string | null
+          photo_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          rp?: string
+          birth_date?: string | null
+          father?: string | null
+          mother?: string | null
+          sex?: string | null
+          service_notes?: string | null
+          observations?: string | null
+          photo_url?: string | null
           created_at?: string
           updated_at?: string
         }

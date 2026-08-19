@@ -46,7 +46,14 @@ export function AnimalCard({ animal }: AnimalCardProps) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-white pb-4 pt-5 border-b">
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Caravana</span>
-          <span className="text-2xl font-bold text-black">{animal.caravana_number}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold text-black">{animal.caravana_number}</span>
+            {animal.boton && (
+              <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-md font-semibold border border-emerald-200">
+                Botón: {animal.boton}
+              </span>
+            )}
+          </div>
         </div>
         <ConfirmDialog
           title="Eliminar Animal"

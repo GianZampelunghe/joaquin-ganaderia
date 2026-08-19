@@ -26,6 +26,7 @@ import { ImageCropperModal } from "./ImageCropperModal"
 
 const animalSchema = z.object({
   caravana_number: z.string().min(1, "El número de caravana es obligatorio"),
+  boton: z.string().optional(),
   current_weight: z.string().optional(),
   birth_date: z.string().optional(),
   weight_birth: z.string().optional(),
@@ -111,6 +112,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
     resolver: zodResolver(animalSchema),
     defaultValues: {
       caravana_number: initialData?.caravana_number || "",
+      boton: initialData?.boton || "",
       current_weight: "", // Sólo en alta, en edición los pesos se manejan aparte
       birth_date: initialData?.birth_date || "",
       weight_birth: initialData?.weight_birth?.toString() || "",
@@ -134,6 +136,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
     
     const data = {
       caravana_number: values.caravana_number,
+      boton: values.boton || null,
       birth_date: values.birth_date || null,
       weight_birth: values.weight_birth ? parseFloat(values.weight_birth.replace(",", ".")) : null,
       weight_weaning: values.weight_weaning ? parseFloat(values.weight_weaning.replace(",", ".")) : null,
@@ -273,26 +276,49 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
         <div className="space-y-4">
           <h3 className="text-lg font-bold border-b pb-2">Identificación</h3>
           
-          <FormField
-            control={form.control}
-            name="caravana_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-base font-semibold">Número de Caravana *</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ej: AR8921" 
-                    {...field} 
-                    type="text"
-                    autoCapitalize="characters"
-                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    className="text-lg py-6 uppercase"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="caravana_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold">Número de Caravana *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Ej: AR8921" 
+                      {...field} 
+                      type="text"
+                      autoCapitalize="characters"
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                      className="text-lg py-6 uppercase"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="boton"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-semibold">Botón (Opcional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Ej: XM524-A704-8" 
+                      {...field} 
+                      type="text"
+                      autoCapitalize="characters"
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                      className="text-lg py-6 uppercase"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {!initialData && (

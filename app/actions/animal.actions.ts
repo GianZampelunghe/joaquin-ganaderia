@@ -165,6 +165,7 @@ export async function updateAnimal(id: string, data: any) {
 
 export async function createAnimal(data: {
   caravana_number: string;
+  boton?: string | null;
   birth_date?: string | null;
   weight_birth?: number | null;
   weight_weaning?: number | null;
@@ -197,6 +198,7 @@ export async function createAnimal(data: {
       .from("animals")
       .insert({
         caravana_number: data.caravana_number,
+        boton: data.boton || null,
         birth_date: data.birth_date || null,
         weight_birth: data.weight_birth || null,
         weight_weaning: data.weight_weaning || null,
