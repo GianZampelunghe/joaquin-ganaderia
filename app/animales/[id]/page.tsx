@@ -7,7 +7,7 @@ import { WeightItem } from "./WeightItem"
 import Link from "next/link"
 import { format, differenceInDays } from "date-fns"
 import { es } from "date-fns/locale"
-import { PdfExportButton } from "@/components/PdfExportButton"
+import PdfExportButton from "@/components/PdfExportButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -88,7 +88,19 @@ export default async function AnimalDetailPage({ params }: PageProps) {
           </span>
         </div>
         <div className="ml-auto flex items-center gap-3">
-          <PdfExportButton animalId={animal.id} caravana={animal.caravana_number} />
+          <PdfExportButton animal={{
+            caravana_number: animal.caravana_number,
+            boton: animal.boton,
+            birth_date: animal.birth_date,
+            weight_birth: animal.weight_birth,
+            weight_weaning: animal.weight_weaning,
+            pelaje_padre: ((animal.genealogy as unknown) as { pelaje_padre: string })?.pelaje_padre,
+            pelaje_madre: ((animal.genealogy as unknown) as { pelaje_madre: string })?.pelaje_madre,
+            pelaje_abuelo: ((animal.genealogy as unknown) as { pelaje_abuelo: string })?.pelaje_abuelo,
+            genetica: ((animal.genealogy as unknown) as { genetica: string })?.genetica,
+            observations: animal.observations,
+            photo_url: animal.photo_url
+          }} />
           <AnimalActions animalId={animal.id} caravana={animal.caravana_number} />
         </div>
       </div>
@@ -218,112 +230,6 @@ export default async function AnimalDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* PDF TEMPLATE - Oculto de la vista normal pero renderizable por html2canvas */}
-      <div 
-        className="absolute top-[-10000px] left-[-10000px] w-[794px] bg-white text-black p-10 font-sans" 
-        id={`pdf-template-${animal.id}`}
-      >
-        <div className="flex items-center justify-between border-b-2 border-emerald-600 pb-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-emerald-800">Cabaña La Cañada</h1>
-            <p className="text-gray-600">Joaquín Castro</p>
-          </div>
-          <div className="text-right">
-            <p className="font-semibold">Ficha Técnica Animal</p>
-            <p className="text-sm text-gray-500">{format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es })}</p>
-          </div>
-        </div>
-
-        <div className="flex gap-6 mb-8">
-          {animal.photo_url ? (
-            <img 
-              src={animal.photo_url} 
-              alt={`Caravana ${animal.caravana_number}`}
-              crossOrigin="anonymous"
-              className="w-1/2 h-64 object-cover rounded-lg border border-gray-200"
-            />
-          ) : (
-            <div className="w-1/2 h-64 bg-gray-100 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 text-sm">
-              <span>Sin fotografía registrada</span>
-            </div>
-          )}
-
-          <div className="w-1/2 flex flex-col gap-4">
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <span className="text-xs text-gray-500 uppercase tracking-wider block mb-1">Identificación</span>
-              <div className="text-3xl font-bold mb-1">RP: {animal.caravana_number}</div>
-              {animal.boton && <div className="text-lg font-semibold text-emerald-700">Botón: {animal.boton}</div>}
-              <div className="text-base text-gray-700 mt-2">
-                Nacimiento: {animal.birth_date ? format(new Date(animal.birth_date), "dd/MM/yyyy") : "--"}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div>
-                <span className="text-xs text-gray-500 block">Peso al Nacer</span>
-                <span className="font-bold">{animal.weight_birth || "--"} kg</span>
-              </div>
-              <div>
-                <span className="text-xs text-gray-500 block">Peso al Destete</span>
-                <span className="font-bold">{animal.weight_weaning || "--"} kg</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-4 text-emerald-800">Genética y Genealogía</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="border border-gray-100 p-3 rounded bg-gray-50">
-              <span className="text-xs text-gray-500 block">Genética</span>
-              <span className="font-medium text-lg">{((animal.genealogy as unknown) as { genetica: string })?.genetica || "--"}</span>
-            </div>
-            <div className="border border-gray-100 p-3 rounded bg-gray-50">
-              <span className="text-xs text-gray-500 block">Pelaje Padre</span>
-              <span className="font-medium text-lg">{((animal.genealogy as unknown) as { pelaje_padre: string })?.pelaje_padre || "--"}</span>
-            </div>
-            <div className="border border-gray-100 p-3 rounded bg-gray-50">
-              <span className="text-xs text-gray-500 block">Pelaje Madre</span>
-              <span className="font-medium text-lg">{((animal.genealogy as unknown) as { pelaje_madre: string })?.pelaje_madre || "--"}</span>
-            </div>
-            <div className="border border-gray-100 p-3 rounded bg-gray-50">
-              <span className="text-xs text-gray-500 block">Pelaje Abuelo</span>
-              <span className="font-medium text-lg">{((animal.genealogy as unknown) as { pelaje_abuelo: string })?.pelaje_abuelo || "--"}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-bold border-b border-gray-200 pb-2 mb-4 text-emerald-800">Sanidad y Observaciones</h3>
-          
-          <div className="mb-4">
-            <span className="font-semibold text-gray-700 block mb-1">Historial de Vacunas:</span>
-            {!animal.vaccines || animal.vaccines.length === 0 ? (
-              <p className="text-gray-600 italic">No hay vacunas registradas.</p>
-            ) : (
-              <ul className="list-disc pl-5 text-gray-800">
-                {animal.vaccines.map(v => (
-                  <li key={v.id}>{v.vaccine_type} - {format(new Date(v.applied_at), "dd/MM/yyyy")}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {((animal.health_data as any)?.notes) && (
-            <div className="mb-4">
-              <span className="font-semibold text-gray-700 block mb-1">Notas Sanitarias:</span>
-              <p className="text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{(animal.health_data as any).notes}</p>
-            </div>
-          )}
-
-          {animal.observations && (
-            <div>
-              <span className="font-semibold text-gray-700 block mb-1">Observaciones Generales:</span>
-              <p className="text-gray-800 bg-gray-50 p-3 rounded border border-gray-100">{animal.observations}</p>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   )
 }
