@@ -236,13 +236,15 @@ export default async function AnimalDetailPage({ params }: PageProps) {
 
         <div className="flex gap-6 mb-8">
           {animal.photo_url ? (
-            <div className="w-1/2 h-64 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={animal.photo_url} alt="Foto" className="w-full h-full object-cover" crossOrigin="anonymous" />
-            </div>
+            <img 
+              src={animal.photo_url} 
+              alt={`Caravana ${animal.caravana_number}`}
+              crossOrigin="anonymous"
+              className="w-1/2 h-64 object-cover rounded-lg border border-gray-200"
+            />
           ) : (
-            <div className="w-1/2 h-64 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-              <span className="text-gray-400">Sin foto disponible</span>
+            <div className="w-1/2 h-64 bg-gray-100 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 text-sm">
+              <span>Sin fotografía registrada</span>
             </div>
           )}
 
