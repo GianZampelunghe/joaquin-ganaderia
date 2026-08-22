@@ -99,7 +99,10 @@ export default async function AnimalDetailPage({ params }: PageProps) {
             pelaje_abuelo: ((animal.genealogy as unknown) as { pelaje_abuelo: string })?.pelaje_abuelo,
             genetica: ((animal.genealogy as unknown) as { genetica: string })?.genetica,
             observations: animal.observations,
-            photo_url: animal.photo_url
+            photo_url: animal.photo_url,
+            sex: animal.sex,
+            scrotal_circumference: animal.scrotal_circumference,
+            gdr: animal.gdr
           }} />
           <AnimalActions animalId={animal.id} caravana={animal.caravana_number} />
         </div>
@@ -119,11 +122,33 @@ export default async function AnimalDetailPage({ params }: PageProps) {
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col">
+                <span className="text-sm text-gray-500">Sexo</span>
+                <span className="font-medium text-lg">
+                  {animal.sex || "--"}
+                </span>
+              </div>
+              <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Nacimiento</span>
                 <span className="font-medium text-lg">
                   {animal.birth_date ? format(new Date(animal.birth_date), "dd/MM/yyyy") : "--"}
                 </span>
               </div>
+              {animal.sex === 'Macho' && animal.scrotal_circumference && (
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-500">Circunf. Escrotal</span>
+                  <span className="font-medium text-lg">
+                    {animal.scrotal_circumference}
+                  </span>
+                </div>
+              )}
+              {animal.sex === 'Hembra' && animal.gdr && (
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-500">GDR</span>
+                  <span className="font-medium text-lg">
+                    {animal.gdr}
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col">
                 <span className="text-sm text-gray-500">Genética</span>
                 <span className="font-medium text-lg">

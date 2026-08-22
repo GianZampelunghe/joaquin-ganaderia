@@ -17,6 +17,9 @@ interface PdfExportButtonProps {
     genetica?: string | null;
     observations?: string | null;
     photo_url?: string | null;
+    sex?: string | null;
+    scrotal_circumference?: string | null;
+    gdr?: string | null;
   };
 }
 
@@ -63,9 +66,24 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
         doc.text(`Botón: ${animal.boton}`, 15, 53);
       }
       doc.text(`Fecha de Nacimiento: ${animal.birth_date ? new Date(animal.birth_date).toLocaleDateString('es-AR') : 'No registrada'}`, 15, animal.boton ? 60 : 53);
-      doc.text(`Genética / Raza: ${animal.genetica || 'No especificada'}`, 15, animal.boton ? 67 : 60);
+      
+      let nextLine = animal.boton ? 67 : 60;
+      if (animal.sex) {
+        doc.text(`Sexo: ${animal.sex}`, 15, nextLine);
+        nextLine += 7;
+      }
+      doc.text(`Genética / Raza: ${animal.genetica || 'No especificada'}`, 15, nextLine);
+      nextLine += 7;
+      
+      if (animal.sex === 'Macho' && animal.scrotal_circumference) {
+        doc.text(`Circunf. Escrotal: ${animal.scrotal_circumference}`, 15, nextLine);
+        nextLine += 7;
+      } else if (animal.sex === 'Hembra' && animal.gdr) {
+        doc.text(`GDR: ${animal.gdr}`, 15, nextLine);
+        nextLine += 7;
+      }
 
-      let currentY = animal.boton ? 78 : 71;
+      let currentY = Math.max(nextLine + 8, 90);
 
       // 3. Cargar y dibujar foto si existe
       if (animal.photo_url) {

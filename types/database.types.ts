@@ -25,6 +25,9 @@ export interface Database {
           created_at: string
           updated_at: string
           boton: string | null
+          sex: 'Macho' | 'Hembra' | null
+          scrotal_circumference: string | null
+          gdr: string | null
         }
         Insert: {
           id?: string
@@ -41,6 +44,9 @@ export interface Database {
           created_at?: string
           updated_at?: string
           boton?: string | null
+          sex?: 'Macho' | 'Hembra' | null
+          scrotal_circumference?: string | null
+          gdr?: string | null
         }
         Update: {
           id?: string
@@ -57,6 +63,9 @@ export interface Database {
           created_at?: string
           updated_at?: string
           boton?: string | null
+          sex?: 'Macho' | 'Hembra' | null
+          scrotal_circumference?: string | null
+          gdr?: string | null
         }
       }
       horses: {

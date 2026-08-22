@@ -22,9 +22,9 @@ export function Header() {
 
   const navLinks = [
     { name: "Inicio", href: "/" },
-    { name: "Mis Animales", href: "/animales" },
+    { name: "Bovinos", href: "/animales" },
     { name: "Caballos", href: "/caballos" },
-    { name: "+ Cargar Animal", href: "/animales/nueva" },
+    { name: "+ Cargar Animal", href: "/cargar" },
     { name: "Cuentas", href: "/cuentas" },
   ]
 

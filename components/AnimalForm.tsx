@@ -40,6 +40,9 @@ const animalSchema = z.object({
   vaccine_type: z.string().optional(),
   vaccine_date: z.string().optional(),
   health_notes: z.string().optional(),
+  sex: z.enum(['Macho', 'Hembra']).nullable().optional(),
+  scrotal_circumference: z.string().optional(),
+  gdr: z.string().optional(),
 })
 
 interface AnimalFormProps {
@@ -126,10 +129,14 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
       vaccine_type: initialData?.vaccines?.[0]?.vaccine_type || "",
       vaccine_date: initialData?.vaccines?.[0]?.applied_at?.split("T")[0] || new Date().toISOString().split("T")[0],
       health_notes: healthData.notes || "",
+      sex: (initialData?.sex as 'Macho' | 'Hembra' | null) || null,
+      scrotal_circumference: initialData?.scrotal_circumference || "",
+      gdr: initialData?.gdr || "",
     },
   })
 
   const hasVaccine = form.watch("has_vaccine")
+  const selectedSex = form.watch("sex")
 
   async function onSubmit(values: z.infer<typeof animalSchema>) {
     setIsSubmitting(true)
@@ -141,6 +148,9 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
       weight_birth: values.weight_birth ? parseFloat(values.weight_birth.replace(",", ".")) : null,
       weight_weaning: values.weight_weaning ? parseFloat(values.weight_weaning.replace(",", ".")) : null,
       observations: values.observations || null,
+      sex: values.sex || null,
+      scrotal_circumference: values.sex === 'Macho' ? (values.scrotal_circumference || null) : null,
+      gdr: values.sex === 'Hembra' ? (values.gdr || null) : null,
       genealogy: {
         pelaje_padre: values.pelaje_padre,
         pelaje_madre: values.pelaje_madre,
@@ -318,6 +328,87 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                 </FormItem>
               )}
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="sex"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel className="text-base font-semibold">Sexo</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => field.onChange('Macho')}
+                        className={`flex-1 py-4 px-6 rounded-2xl border-2 transition-all font-bold text-lg ${
+                          field.value === 'Macho'
+                            ? 'bg-[#BAE6FD] border-[#7DD3FC] text-[#0369A1] shadow-sm scale-[1.02]'
+                            : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        ♂ Macho
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => field.onChange('Hembra')}
+                        className={`flex-1 py-4 px-6 rounded-2xl border-2 transition-all font-bold text-lg ${
+                          field.value === 'Hembra'
+                            ? 'bg-[#FBCFE8] border-[#F9A8D4] text-[#BE185D] shadow-sm scale-[1.02]'
+                            : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                        }`}
+                      >
+                        ♀ Hembra
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {selectedSex === 'Macho' && (
+              <FormField
+                control={form.control}
+                name="scrotal_circumference"
+                render={({ field }) => (
+                  <FormItem className="animate-in fade-in slide-in-from-top-4">
+                    <FormLabel className="text-base font-semibold">Circunferencia Escrotal</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: 36 cm o 360 mm"
+                        {...field}
+                        type="text"
+                        className="text-lg py-6"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {selectedSex === 'Hembra' && (
+              <FormField
+                control={form.control}
+                name="gdr"
+                render={({ field }) => (
+                  <FormItem className="animate-in fade-in slide-in-from-top-4">
+                    <FormLabel className="text-base font-semibold">GDR (Grado Desarrollo Reproductivo)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: GDR 1, 2, 3 o notas"
+                        {...field}
+                        type="text"
+                        className="text-lg py-6"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
