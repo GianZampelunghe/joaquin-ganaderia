@@ -25,7 +25,7 @@ export default async function HomePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link 
-          href="/animales/nueva"
+          href="/cargar"
           className="flex items-center gap-4 p-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl shadow-sm transition-all duration-200 active:scale-[0.98] group"
         >
           <div className="bg-white/20 p-3 rounded-xl group-hover:scale-110 transition-transform">

@@ -262,28 +262,28 @@ export function HorseForm({ initialData }: HorseFormProps) {
               <FormItem className="space-y-3">
                 <FormLabel className="text-base">Sexo *</FormLabel>
                 <FormControl>
-                  <div className="flex bg-gray-100 p-1 rounded-xl">
+                  <div className="flex gap-4">
                     <button
                       type="button"
                       onClick={() => field.onChange("Macho")}
-                      className={`flex-1 py-3 text-center rounded-lg font-medium transition-all ${
+                      className={`flex-1 py-4 px-6 rounded-2xl border-2 transition-all font-bold text-lg ${
                         field.value === "Macho" 
-                          ? "bg-white text-emerald-800 shadow-sm border border-gray-200" 
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "bg-[#BAE6FD] border-[#7DD3FC] text-[#0369A1] shadow-sm scale-[1.02]" 
+                          : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
                       }`}
                     >
-                      [ ♂ Macho ]
+                      ♂ Macho
                     </button>
                     <button
                       type="button"
                       onClick={() => field.onChange("Hembra")}
-                      className={`flex-1 py-3 text-center rounded-lg font-medium transition-all ${
+                      className={`flex-1 py-4 px-6 rounded-2xl border-2 transition-all font-bold text-lg ${
                         field.value === "Hembra" 
-                          ? "bg-white text-rose-800 shadow-sm border border-gray-200" 
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "bg-[#FBCFE8] border-[#F9A8D4] text-[#BE185D] shadow-sm scale-[1.02]" 
+                          : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50"
                       }`}
                     >
-                      [ ♀ Hembra ]
+                      ♀ Hembra
                     </button>
                   </div>
                 </FormControl>
