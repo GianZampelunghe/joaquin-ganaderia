@@ -22,10 +22,10 @@ export function AnimalActions({ animalId, caravana }: { animalId: string, carava
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-2">
       <Link href={`/animales/${animalId}/editar`}>
-        <Button variant="outline" className="gap-2 bg-white text-gray-700 hover:bg-gray-50 active:scale-[0.98]">
-          <Edit className="h-4 w-4" /> Editar
+        <Button variant="outline" className="px-3 py-2 text-sm border rounded-xl gap-2 bg-white text-gray-700 hover:bg-gray-50 active:scale-[0.98]">
+          ✏️ Editar
         </Button>
       </Link>
       <ConfirmDialog
@@ -33,8 +33,8 @@ export function AnimalActions({ animalId, caravana }: { animalId: string, carava
         description={`¿Estás seguro de eliminar la caravana ${caravana}? Se borrará todo su historial y pesajes.`}
         onConfirm={handleDelete}
         trigger={
-          <Button variant="outline" className="gap-2 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border-rose-200 active:scale-[0.98]">
-            <Trash2 className="h-4 w-4" /> Eliminar
+          <Button variant="outline" className="p-2 text-rose-600 bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 hover:text-rose-800 active:scale-[0.98]">
+            🗑️
           </Button>
         }
       />

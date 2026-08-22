@@ -166,16 +166,15 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
     <button
       onClick={generatePdf}
       disabled={isGenerating}
-      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-medium rounded-xl shadow-sm transition-all duration-150 disabled:opacity-50"
+      className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-150 disabled:opacity-50"
     >
       {isGenerating ? (
         <>
           <Loader2 className="w-4 h-4 animate-spin"/>
-          <span>Generando PDF...</span>
+          <span>Generando...</span>
         </>
       ) : (
         <>
-          <Download className="w-4 h-4"/>
           <span>📄 Descargar Ficha PDF</span>
         </>
       )}

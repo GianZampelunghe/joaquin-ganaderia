@@ -523,7 +523,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                 <FormItem>
                   <FormLabel>Padre *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre o RP del padre" {...field} className="text-lg py-6" />
+                    <Input placeholder="" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -536,7 +536,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                 <FormItem>
                   <FormLabel>Madre *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre o RP de la madre" {...field} className="text-lg py-6" />
+                    <Input placeholder="" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -549,7 +549,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                 <FormItem>
                   <FormLabel>Abuelo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre o RP del abuelo materno/paterno" {...field} className="text-lg py-6" />
+                    <Input placeholder="" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

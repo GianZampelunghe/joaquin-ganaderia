@@ -70,24 +70,26 @@ export default async function AnimalDetailPage({ params }: PageProps) {
   return (
     <div className="flex flex-col gap-6 max-w-3xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/animales" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors">
-          <ChevronLeft className="h-6 w-6 text-gray-700" />
-        </Link>
-        <div className="flex flex-col">
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-gray-900 leading-none">Caravana {animal.caravana_number}</h2>
-            {animal.boton && (
-              <span className="bg-emerald-100 text-emerald-800 text-sm px-2.5 py-1 rounded-md font-semibold border border-emerald-200">
-                Botón: {animal.boton}
-              </span>
-            )}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-4">
+          <Link href="/animales" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors mt-1 sm:mt-0">
+            <ChevronLeft className="h-6 w-6 text-gray-700" />
+          </Link>
+          <div className="flex flex-col">
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-2xl font-bold text-gray-900 leading-none">Caravana {animal.caravana_number}</h2>
+              {animal.boton && (
+                <span className="bg-emerald-100 text-emerald-800 text-sm px-2.5 py-1 rounded-md font-semibold border border-emerald-200">
+                  Botón: {animal.boton}
+                </span>
+              )}
+            </div>
+            <span className="text-sm text-gray-500 mt-1">
+              Actualizado el {format(new Date(animal.updated_at), "d MMM yyyy HH:mm", { locale: es })}
+            </span>
           </div>
-          <span className="text-sm text-gray-500 mt-1">
-            Actualizado el {format(new Date(animal.updated_at), "d MMM yyyy HH:mm", { locale: es })}
-          </span>
         </div>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <PdfExportButton animal={{
             caravana_number: animal.caravana_number,
             boton: animal.boton,

@@ -29,17 +29,19 @@ export default async function CaballoDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Link href="/caballos" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors">
-          <ChevronLeft className="h-6 w-6 text-gray-700" />
-        </Link>
-        <div className="flex flex-col">
-          <h2 className="text-2xl font-bold text-gray-900 leading-none">{horse.rp}</h2>
-          <span className="text-sm text-gray-500 mt-1">
-            Actualizado el {format(new Date(horse.updated_at), "d MMM yyyy HH:mm", { locale: es })}
-          </span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-start sm:items-center gap-4">
+          <Link href="/caballos" className="p-2 -ml-2 rounded-full hover:bg-gray-100 transition-colors mt-1 sm:mt-0">
+            <ChevronLeft className="h-6 w-6 text-gray-700" />
+          </Link>
+          <div className="flex flex-col">
+            <h2 className="text-2xl font-bold text-gray-900 leading-none">{horse.rp}</h2>
+            <span className="text-sm text-gray-500 mt-1">
+              Actualizado el {format(new Date(horse.updated_at), "d MMM yyyy HH:mm", { locale: es })}
+            </span>
+          </div>
         </div>
-        <div className="ml-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <HorseActions horseId={horse.id} rp={horse.rp} />
         </div>
       </div>

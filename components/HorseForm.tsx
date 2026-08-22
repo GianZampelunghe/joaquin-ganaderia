@@ -304,7 +304,7 @@ export function HorseForm({ initialData }: HorseFormProps) {
                 <FormItem>
                   <FormLabel>Padre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre del padre" {...field} className="text-lg py-6" />
+                    <Input placeholder="" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -317,7 +317,7 @@ export function HorseForm({ initialData }: HorseFormProps) {
                 <FormItem>
                   <FormLabel>Madre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre de la madre" {...field} className="text-lg py-6" />
+                    <Input placeholder="" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
