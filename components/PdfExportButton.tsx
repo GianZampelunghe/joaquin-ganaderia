@@ -126,11 +126,11 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
-      doc.text(`• Pelaje Padre: ${animal.pelaje_padre || '-'}`, 20, currentY);
+      doc.text(`• Padre: ${animal.pelaje_padre || '-'}`, 20, currentY);
       currentY += 7;
-      doc.text(`• Pelaje Madre: ${animal.pelaje_madre || '-'}`, 20, currentY);
+      doc.text(`• Madre: ${animal.pelaje_madre || '-'}`, 20, currentY);
       currentY += 7;
-      doc.text(`• Pelaje Abuelo: ${animal.pelaje_abuelo || '-'}`, 20, currentY);
+      doc.text(`• Abuelo: ${animal.pelaje_abuelo || '-'}`, 20, currentY);
       currentY += 14;
 
       // 6. Observaciones

@@ -281,3 +281,21 @@ export async function uploadAnimalPhoto(animalId: string, formData: FormData) {
     return { success: false, error: "No se pudo subir la foto." }
   }
 }
+
+export async function checkCaravanaExists(caravana: string, currentAnimalId?: string) {
+  try {
+    const supabase = await createClient()
+    let query = supabase.from("animals").select("id").eq("caravana_number", caravana)
+    
+    if (currentAnimalId) {
+      query = query.neq("id", currentAnimalId)
+    }
+
+    const { data: existing } = await query.maybeSingle()
+    
+    return !!existing
+  } catch (error) {
+    console.error("Error checking caravana:", error)
+    return false
+  }
+}

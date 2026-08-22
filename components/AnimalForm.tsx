@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { createAnimal, updateAnimal, uploadAnimalPhoto, AnimalWithRelations } from "@/app/actions/animal.actions"
+import { createAnimal, updateAnimal, uploadAnimalPhoto, AnimalWithRelations, checkCaravanaExists } from "@/app/actions/animal.actions"
 import { compressImage } from "@/lib/image-utils"
 
 import { Button } from "@/components/ui/button"
@@ -52,6 +52,7 @@ interface AnimalFormProps {
 export function AnimalForm({ initialData }: AnimalFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCaravanaDuplicate, setIsCaravanaDuplicate] = useState(false)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.photo_url || null)
   const [isCropperOpen, setIsCropperOpen] = useState(false)
@@ -124,7 +125,7 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
       pelaje_padre: genealogy.pelaje_padre || "",
       pelaje_madre: genealogy.pelaje_madre || "",
       pelaje_abuelo: genealogy.pelaje_abuelo || "",
-      genetica: genealogy.genetica || "",
+      genetica: genealogy.genetica || "Angus",
       has_vaccine: initialData?.vaccines && initialData.vaccines.length > 0 ? true : false,
       vaccine_type: initialData?.vaccines?.[0]?.vaccine_type || "",
       vaccine_date: initialData?.vaccines?.[0]?.applied_at?.split("T")[0] || new Date().toISOString().split("T")[0],
@@ -137,6 +138,20 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
 
   const hasVaccine = form.watch("has_vaccine")
   const selectedSex = form.watch("sex")
+  const caravanaNumber = form.watch("caravana_number")
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (caravanaNumber && caravanaNumber.trim().length > 0) {
+        const exists = await checkCaravanaExists(caravanaNumber.trim(), initialData?.id)
+        setIsCaravanaDuplicate(exists)
+      } else {
+        setIsCaravanaDuplicate(false)
+      }
+    }, 500)
+    
+    return () => clearTimeout(timer)
+  }, [caravanaNumber, initialData?.id])
 
   async function onSubmit(values: z.infer<typeof animalSchema>) {
     setIsSubmitting(true)
@@ -300,9 +315,14 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
                       type="text"
                       autoCapitalize="characters"
                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                      className="text-lg py-6 uppercase"
+                      className={`text-lg py-6 uppercase ${isCaravanaDuplicate ? 'border-rose-500 ring-rose-200 focus-visible:ring-rose-500' : ''}`}
                     />
                   </FormControl>
+                  {isCaravanaDuplicate && (
+                    <div className="text-sm font-medium text-rose-600 bg-rose-50 p-3 rounded-md border border-rose-200 mt-2">
+                      ⛔ La caravana "{caravanaNumber}" ya se encuentra registrada en el sistema. Ingrese un número distinto o edite el animal existente.
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -501,9 +521,9 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
               name="pelaje_padre"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pelaje del Padre *</FormLabel>
+                  <FormLabel>Padre *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Negro" {...field} className="text-lg py-6" />
+                    <Input placeholder="Nombre o RP del padre" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -514,9 +534,9 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
               name="pelaje_madre"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pelaje de la Madre *</FormLabel>
+                  <FormLabel>Madre *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Colorado" {...field} className="text-lg py-6" />
+                    <Input placeholder="Nombre o RP de la madre" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -527,9 +547,9 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
               name="pelaje_abuelo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pelaje del Abuelo *</FormLabel>
+                  <FormLabel>Abuelo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Pampa" {...field} className="text-lg py-6" />
+                    <Input placeholder="Nombre o RP del abuelo materno/paterno" {...field} className="text-lg py-6" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -661,8 +681,8 @@ export function AnimalForm({ initialData }: AnimalFormProps) {
 
         <Button 
           type="submit" 
-          disabled={isSubmitting}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-7 text-xl rounded-xl transition-all active:scale-[0.98] shadow-sm"
+          disabled={isSubmitting || isCaravanaDuplicate}
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-7 text-xl rounded-xl transition-all active:scale-[0.98] shadow-sm disabled:opacity-50"
         >
           {isSubmitting ? "Guardando..." : (initialData ? "Actualizar Animal" : "Guardar Animal")}
         </Button>

@@ -156,19 +156,19 @@ export default async function AnimalDetailPage({ params }: PageProps) {
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Pelaje Padre</span>
+                <span className="text-sm text-gray-500">Padre</span>
                 <span className="font-medium text-lg">
                   {((animal.genealogy as unknown) as { pelaje_padre: string })?.pelaje_padre || "--"}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Pelaje Madre</span>
+                <span className="text-sm text-gray-500">Madre</span>
                 <span className="font-medium text-lg">
                   {((animal.genealogy as unknown) as { pelaje_madre: string })?.pelaje_madre || "--"}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Pelaje Abuelo</span>
+                <span className="text-sm text-gray-500">Abuelo</span>
                 <span className="font-medium text-lg">
                   {((animal.genealogy as unknown) as { pelaje_abuelo: string })?.pelaje_abuelo || "--"}
                 </span>
