@@ -48,43 +48,50 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       });
 
       // 1. Encabezado institucional
-      doc.setFillColor(16, 185, 129); // Verde esmeralda suave
-      doc.rect(0, 0, 210, 24, 'F');
+      doc.setFillColor(249, 236, 222); // #F9ECDE
+      doc.rect(0, 0, 210, 36, 'F');
       
       const logoImg = await loadLogo();
       if (logoImg) {
-        doc.addImage(logoImg, 'PNG', 12, 3, 18, 18);
+        doc.addImage(logoImg, 'PNG', 12, 4, 28, 28);
       }
       
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(30, 58, 43);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(15);
-      doc.text('ESTABLECIMIENTO LA CAÑADA', 35, 11);
+      doc.setFontSize(16);
+      doc.text('ESTABLECIMIENTO LA CAÑADA', 44, 16);
       
-      doc.setFontSize(9.5);
+      doc.setFontSize(10.5);
       doc.setFont('helvetica', 'normal');
-      doc.text('Joaquín Castro - Ficha Técnica Oficial', 35, 17);
+      doc.setTextColor(80, 70, 60);
+      doc.text('Joaquín Castro - Ficha Técnica Oficial', 44, 23);
 
       const fechaHoy = new Date().toLocaleDateString('es-AR');
-      doc.text(`Fecha de emisión: ${fechaHoy}`, 145, 18);
+      doc.setFontSize(9);
+      doc.setTextColor(100, 90, 80);
+      doc.text(`Fecha de emisión: ${fechaHoy}`, 145, 23);
+
+      // Línea de separación en la base de la cabecera
+      doc.setDrawColor(217, 195, 176);
+      doc.line(0, 36, 210, 36);
 
       // 2. Identificación Principal
       doc.setTextColor(20, 20, 20);
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
-      doc.text('IDENTIFICACIÓN DEL ANIMAL', 15, 36);
+      doc.text('IDENTIFICACIÓN DEL ANIMAL', 15, 46);
 
       doc.setDrawColor(220, 220, 220);
-      doc.line(15, 38, 195, 38);
+      doc.line(15, 48, 195, 48);
 
       doc.setFontSize(11);
-      doc.text(`Caravana: ${animal.caravana_number || '-'}`, 15, 46);
+      doc.text(`Caravana: ${animal.caravana_number || '-'}`, 15, 56);
       if (animal.boton) {
-        doc.text(`Botón: ${animal.boton}`, 15, 53);
+        doc.text(`Botón: ${animal.boton}`, 15, 63);
       }
-      doc.text(`Fecha de Nacimiento: ${animal.birth_date ? new Date(animal.birth_date).toLocaleDateString('es-AR') : 'No registrada'}`, 15, animal.boton ? 60 : 53);
+      doc.text(`Fecha de Nacimiento: ${animal.birth_date ? new Date(animal.birth_date).toLocaleDateString('es-AR') : 'No registrada'}`, 15, animal.boton ? 70 : 63);
       
-      let nextLine = animal.boton ? 67 : 60;
+      let nextLine = animal.boton ? 77 : 70;
       if (animal.sex) {
         doc.text(`Sexo: ${animal.sex}`, 15, nextLine);
         nextLine += 7;
@@ -100,8 +107,6 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
         nextLine += 7;
       }
 
-      let currentY = Math.max(nextLine + 8, 90);
-
       // 3. Cargar y dibujar foto si existe
       if (animal.photo_url) {
         try {
@@ -113,14 +118,30 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
             img.onerror = reject;
           });
 
-          // Dibujar imagen a la derecha (65mm ancho x 50mm alto)
-          doc.addImage(img, 'JPEG', 130, 32, 65, 50);
+          const imgWidth = img.naturalWidth || img.width;
+          const imgHeight = img.naturalHeight || img.height;
+          const ratio = imgWidth / imgHeight;
+
+          let finalW = 65;
+          let finalH = 65 / ratio;
+
+          if (finalH > 50) {
+            finalH = 50;
+            finalW = 50 * ratio;
+          }
+
+          // Centrar dentro de la caja de 65x50mm
+          const finalX = 130 + (65 - finalW) / 2;
+          const finalY = 48 + (50 - finalH) / 2;
+
+          doc.addImage(img, 'JPEG', finalX, finalY, finalW, finalH);
         } catch (imgError) {
           console.warn('No se pudo renderizar la foto en el PDF:', imgError);
         }
       }
 
       // 4. Pesos Clave
+      let currentY = 104;
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
       doc.text('PESOS CLAVE', 15, currentY);
@@ -132,7 +153,7 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       doc.text(`• Peso al Nacer: ${animal.weight_birth ? `${animal.weight_birth} kg` : '-'}`, 20, currentY);
       currentY += 7;
       doc.text(`• Peso al Destete: ${animal.weight_weaning ? `${animal.weight_weaning} kg` : '-'}`, 20, currentY);
-      currentY += 14;
+      currentY = 135;
 
       // 5. Árbol Genealógico
       doc.setFont('helvetica', 'bold');
@@ -148,7 +169,7 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       doc.text(`• Madre: ${animal.pelaje_madre || '-'}`, 20, currentY);
       currentY += 7;
       doc.text(`• Abuelo: ${animal.pelaje_abuelo || '-'}`, 20, currentY);
-      currentY += 14;
+      currentY = 175;
 
       // 6. Observaciones
       if (animal.observations) {
