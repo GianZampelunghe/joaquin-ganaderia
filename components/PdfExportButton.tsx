@@ -23,6 +23,44 @@ interface PdfExportButtonProps {
   };
 }
 
+const compressImageToDataUrl = (src: string, maxDim: number = 800, quality: number = 0.8): Promise<{ dataUrl: string, ratio: number } | null> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = src;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let { width, height } = img;
+      const ratio = width / height;
+
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return resolve(null);
+
+      // Fondo blanco para evitar transparencias rotas en JPEG
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+
+      resolve({ dataUrl: canvas.toDataURL('image/jpeg', quality), ratio });
+    };
+    img.onerror = () => resolve(null);
+  });
+};
+
 export default function PdfExportButton({ animal }: PdfExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -110,31 +148,24 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       // 3. Cargar y dibujar foto si existe
       if (animal.photo_url) {
         try {
-          const img = new Image();
-          img.crossOrigin = 'Anonymous';
-          img.src = animal.photo_url;
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
+          const compressed = await compressImageToDataUrl(animal.photo_url, 800, 0.8);
+          if (compressed) {
+            const { dataUrl, ratio } = compressed;
 
-          const imgWidth = img.naturalWidth || img.width;
-          const imgHeight = img.naturalHeight || img.height;
-          const ratio = imgWidth / imgHeight;
+            let finalW = 65;
+            let finalH = 65 / ratio;
 
-          let finalW = 65;
-          let finalH = 65 / ratio;
+            if (finalH > 50) {
+              finalH = 50;
+              finalW = 50 * ratio;
+            }
 
-          if (finalH > 50) {
-            finalH = 50;
-            finalW = 50 * ratio;
+            // Centrar dentro de la caja de 65x50mm
+            const finalX = 130 + (65 - finalW) / 2;
+            const finalY = 48 + (50 - finalH) / 2;
+
+            doc.addImage(dataUrl, 'JPEG', finalX, finalY, finalW, finalH);
           }
-
-          // Centrar dentro de la caja de 65x50mm
-          const finalX = 130 + (65 - finalW) / 2;
-          const finalY = 48 + (50 - finalH) / 2;
-
-          doc.addImage(img, 'JPEG', finalX, finalY, finalW, finalH);
         } catch (imgError) {
           console.warn('No se pudo renderizar la foto en el PDF:', imgError);
         }
