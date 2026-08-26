@@ -64,37 +64,6 @@ async function getCompressedDataUrl(src: string, maxDimension: number = 600, qua
   });
 }
 
-async function getHighQualityLogoDataUrl(src: string): Promise<string | null> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.src = src;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      // Usar resolución de alta definición (1000px) para conservar trazos finos
-      const targetWidth = 1000;
-      const targetHeight = Math.round((img.height * targetWidth) / img.width);
-
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return resolve(null);
-
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-
-      // Fondo beige institucional #F9ECDE
-      ctx.fillStyle = '#F9ECDE';
-      ctx.fillRect(0, 0, targetWidth, targetHeight);
-      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-      // Exportar a JPEG con calidad 0.95 (sin pixelado y peso < 80KB)
-      resolve(canvas.toDataURL('image/jpeg', 0.95));
-    };
-    img.onerror = () => resolve(null);
-  });
-}
-
 export default function PdfExportButton({ animal }: PdfExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -113,14 +82,19 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       doc.setFillColor(249, 236, 222);
       doc.rect(0, 0, 210, 36, 'F');
 
-      // Cargar y procesar Logo comprimido
+      // Carga directa del logo original PNG en alta definición
       try {
-        const logoDataUrl = await getHighQualityLogoDataUrl('/logo.canada.jpg');
-        if (logoDataUrl) {
-          doc.addImage(logoDataUrl, 'JPEG', 12, 4, 28, 28, undefined, 'FAST');
-        }
+        const logoImg = new Image();
+        logoImg.src = '/logo.la.cañada1.png';
+        await new Promise((resolve, reject) => {
+          logoImg.onload = resolve;
+          logoImg.onerror = reject;
+        });
+
+        // Incrustar en el encabezado sobre fondo beige (#F9ECDE)
+        doc.addImage(logoImg, 'PNG', 12, 4, 28, 28);
       } catch (e) {
-        console.warn('No se pudo cargar el logo:', e);
+        console.warn('No se pudo cargar el logo original PNG:', e);
       }
 
       // Textos de Cabecera
