@@ -84,7 +84,7 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
 
       // Cargar y procesar Logo comprimido
       try {
-        const logoObj = await getCompressedDataUrl('/logo.la.cañada1.png', 300, 0.8);
+        const logoObj = await getCompressedDataUrl('/logo.canada.jpg', 300, 0.85);
         if (logoObj) {
           doc.addImage(logoObj.dataUrl, 'JPEG', 12, 4, 28, 28, undefined, 'FAST');
         }
