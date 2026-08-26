@@ -48,12 +48,12 @@ export function ImageCropperModal({ open, onOpenChange, imageSrc, onCropComplete
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] w-[95vw] h-[90vh] max-h-[800px] p-0 flex flex-col rounded-2xl bg-gray-950 border-gray-800 overflow-hidden">
-        <DialogHeader className="p-4 border-b border-gray-800 bg-gray-900/50 z-10 shrink-0">
+      <DialogContent className="relative w-full max-w-lg md:max-w-2xl bg-[#0F172A] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] p-0 border border-slate-800">
+        <DialogHeader className="p-4 border-b border-slate-800 bg-[#0F172A] z-10 shrink-0">
           <DialogTitle className="text-xl font-bold text-white text-center">Editar Foto</DialogTitle>
         </DialogHeader>
 
-        <div className="relative flex-1 w-full bg-black">
+        <div className="h-72 sm:h-96 w-full relative bg-black/50">
           {imageSrc && (
             <Cropper
               image={imageSrc}
@@ -73,30 +73,29 @@ export function ImageCropperModal({ open, onOpenChange, imageSrc, onCropComplete
           )}
         </div>
 
-        <DialogFooter className="p-4 sm:p-6 border-t border-gray-800 bg-gray-900 flex-col gap-3 shrink-0">
+        <DialogFooter className="flex flex-wrap sm:flex-row items-center justify-between gap-3 p-4 bg-[#0F172A] border-t border-slate-800 shrink-0">
           <Button
             type="button"
             variant="outline"
-            className="w-full h-12 bg-gray-800 hover:bg-gray-700 text-white border-gray-700 hover:text-white transition-colors active:scale-[0.98]"
+            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium flex items-center gap-2 border-0"
             onClick={handleRotate}
           >
             <RotateCw className="h-5 w-5 mr-2" />
             Rotar 90°
           </Button>
 
-          <div className="grid grid-cols-2 gap-3 w-full">
+          <div className="flex items-center gap-3 ml-auto">
             <Button
               type="button"
-              variant="outline"
-              className="w-full h-12 bg-transparent text-gray-300 hover:text-white border-gray-700 hover:bg-gray-800 active:scale-[0.98]"
+              variant="ghost"
+              className="px-4 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800 text-sm font-medium rounded-xl"
               onClick={() => onOpenChange(false)}
             >
-              <X className="h-5 w-5 mr-2" />
               Cancelar
             </Button>
             <Button
               type="button"
-              className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold active:scale-[0.98]"
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-semibold flex items-center gap-2 shadow-lg"
               onClick={handleApply}
               disabled={isProcessing}
             >

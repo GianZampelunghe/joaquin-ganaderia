@@ -26,6 +26,18 @@ interface PdfExportButtonProps {
 export default function PdfExportButton({ animal }: PdfExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const loadLogo = (): Promise<HTMLImageElement | null> => {
+    return new Promise((resolve) => {
+      const logo = new Image();
+      logo.src = '/logo.la.cañada1.png';
+      logo.onload = () => resolve(logo);
+      logo.onerror = () => {
+        console.warn('No se pudo cargar el archivo /logo.la.cañada1.png');
+        resolve(null);
+      };
+    });
+  };
+
   const generatePdf = async () => {
     try {
       setIsGenerating(true);
@@ -39,14 +51,19 @@ export default function PdfExportButton({ animal }: PdfExportButtonProps) {
       doc.setFillColor(16, 185, 129); // Verde esmeralda suave
       doc.rect(0, 0, 210, 24, 'F');
       
+      const logoImg = await loadLogo();
+      if (logoImg) {
+        doc.addImage(logoImg, 'PNG', 12, 3, 18, 18);
+      }
+      
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text('ESTABLECIMIENTO LA CAÑADA', 15, 12);
+      doc.setFontSize(15);
+      doc.text('ESTABLECIMIENTO LA CAÑADA', 35, 11);
       
-      doc.setFontSize(10);
+      doc.setFontSize(9.5);
       doc.setFont('helvetica', 'normal');
-      doc.text('Joaquín Castro - Ficha Técnica Oficial', 15, 18);
+      doc.text('Joaquín Castro - Ficha Técnica Oficial', 35, 17);
 
       const fechaHoy = new Date().toLocaleDateString('es-AR');
       doc.text(`Fecha de emisión: ${fechaHoy}`, 145, 18);
